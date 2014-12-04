@@ -5,10 +5,12 @@ Given a list of URLS it will email a list of recipients if the website does not 
 
 
 ```
-https://github.com/ogs22/webecca.git
+git clone https://github.com/ogs22/webecca.git
+cd webecca
 ```
 
-edit webecca/urls.txt and email.txt
+edit urls.txt and email.txt
+one url and email per line
 
 ```
 php main.php
