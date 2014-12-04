@@ -2,24 +2,23 @@
 
 define("__URLFILE__","./urls.txt");
 define("__EMAILFILE__","./emails.txt");
-define("__QUIET__", false);
+define("__QUIET__", false);// turn to true to stop terminal output
 define("__AGENT__","Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1");
 define("__TIMEOUT__",15);
 
-$x = new checkmysite();
-/**
-* 
-*/
+new checkmysite();
+
 class checkmysite {
 	
 	function __construct(){
-		if (!__QUIET__) {
-			print "\n-----------------------\nBeginning test of URLs\n";
-		}
+		$this->termcol = @exec('tput cols');
+		$this->log("Beginning test of URLs");
+		$this->log("","=");
 		$this->readURLlist();
 		$this->readEmaillist();
 		$this->initcurl();
 		$this->go();
+		$this->log("End of test of URLs");
 	}
 
 	public function go() {
@@ -29,16 +28,25 @@ class checkmysite {
 
 	}
 
-	private function initcurl() {
-		stream_context_set_default(
-			array(
-				'http' => array(
-					'method' => 'HEAD'
-					)
-				)
-			);
-		$this->ch = curl_init();
+	public function log($msg="",$pad=" ") {
+		if (!$this->termcol or $this->termcol > 80) {
+			$this->termcol = 80;//max width
+		}
+		$width = $this->termcol-3;// width from terminal output
+		if (strlen($msg)> $width) {
+			$mul = ceil(strlen($msg)/$width);
+			$width = $this->termcol*$mul-3;
+		}
+		$msg = str_pad($msg,$width ,$pad);
+		$msg = "\n|".$pad.$msg."|";
+		if (!__QUIET__) {
+			print $msg;
+		}
+	}
 
+	private function initcurl() {
+		stream_context_set_default(array('http' => array('method' => 'HEAD')));
+		$this->ch = curl_init();
 		curl_setopt( $this->ch, CURLOPT_USERAGENT, __AGENT__ );
 		curl_setopt( $this->ch, CURLOPT_FOLLOWLOCATION, true );
 		curl_setopt( $this->ch, CURLOPT_ENCODING, "" );
@@ -51,11 +59,7 @@ class checkmysite {
     }
 
     private function report($url,$code) {
-    	if (!__QUIET__) {
-    		print "\n";
-    		print "\nError accesing:".$url;
-    		print "\n emailing admin\n";
-    	}
+    	$this->log("Error accessing:".$url." emailing admin");
     	$subject = "Problem accessing".$url;
     	$message = "The URL:".$url." returned an HTTP code of:".$code;
     	$message = wordwrap($message, 70, "\r\n");
@@ -63,19 +67,16 @@ class checkmysite {
 
     }
 
-
     private function check($url) {
     	curl_setopt( $this->ch, CURLOPT_URL, $url );
     	$content = curl_exec( $this->ch );
     	$info = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
-    	if (!__QUIET__) {
-    		print "\ncheck ".$url."\nresponse:".$info;
-    		print "\n";
-    	}
+    	$this->log(" check ".$url);
+    	$this->log("  response:".$info);
+    	$this->log();
     	if ($info != "200") {
     		$this->report($url,$info);
     	}
-
     }
 
     private function readURLlist() {
@@ -89,6 +90,10 @@ class checkmysite {
     	}
     	$this->emails = implode(",", $emails);
     }
+
+    public function __destruct() {
+       if (!__QUIET__) print "\n\n";
+   }
 }
 
 
