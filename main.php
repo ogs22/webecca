@@ -13,7 +13,7 @@ new checksite();
 class checksite {
 	
 	function __construct(){
-		$this->termcol = @exec('tput cols');
+		if (!__QUIET__) $this->termcol = @exec('tput -T xterm-color cols');
 		$this->log("Beginning test of URLs");
 		$this->log("","=");
 		$this->readURLlist();
