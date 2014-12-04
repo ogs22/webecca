@@ -1,2 +1,0 @@
-ogg@example.com
-ogg@example.net
