@@ -48,26 +48,26 @@ class checkmysite {
     	curl_setopt( $this->ch, CURLOPT_CONNECTTIMEOUT, __TIMEOUT__ );
     	curl_setopt( $this->ch, CURLOPT_TIMEOUT, __TIMEOUT__ );
     	curl_setopt( $this->ch, CURLOPT_MAXREDIRS, 10 );
-	}
+    }
 
-	private function report($url,$code) {
-		if (!__QUIET__) {
-			print "\n";
-			print "\nError accesing:".$url;
-			print "\n emailing admin\n";
-		}
-		$subject = "Problem accessing".$url;
-		$message = "The URL:".$url." returned an HTTP code of:".$code;
-		$message = wordwrap($message, 70, "\r\n");
-		mail($this->emails, $subject, $message);
+    private function report($url,$code) {
+    	if (!__QUIET__) {
+    		print "\n";
+    		print "\nError accesing:".$url;
+    		print "\n emailing admin\n";
+    	}
+    	$subject = "Problem accessing".$url;
+    	$message = "The URL:".$url." returned an HTTP code of:".$code;
+    	$message = wordwrap($message, 70, "\r\n");
+    	mail($this->emails, $subject, $message);
 
-	}
+    }
 
 
-	private function check($url) {
-		curl_setopt( $this->ch, CURLOPT_URL, $url );
+    private function check($url) {
+    	curl_setopt( $this->ch, CURLOPT_URL, $url );
     	$content = curl_exec( $this->ch );
-	    $info = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+    	$info = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
     	if (!__QUIET__) {
     		print "\ncheck ".$url."\nresponse:".$info;
     		print "\n";
@@ -76,19 +76,19 @@ class checkmysite {
     		$this->report($url,$info);
     	}
 
-	}
+    }
 
-	private function readURLlist() {
-		$this->urls = file(__URLFILE__);
-	}
+    private function readURLlist() {
+    	$this->urls = file(__URLFILE__);
+    }
 
-	private function readEmaillist() {
-		$emails = file(__EMAILFILE__);
-		foreach ($emails as $key => $value) {
-			$emails[$key] = trim($value);
-		}
-		$this->emails = implode(",", $emails);
-	}
+    private function readEmaillist() {
+    	$emails = file(__EMAILFILE__);
+    	foreach ($emails as $key => $value) {
+    		$emails[$key] = trim($value);
+    	}
+    	$this->emails = implode(",", $emails);
+    }
 }
 
 
