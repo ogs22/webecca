@@ -3,8 +3,11 @@
 $sd = realpath(dirname(__FILE__)); // where the script and config files live
 define("__URLFILE__",$sd."/urls.txt");
 define("__EMAILFILE__",$sd."/emails.txt");
-//define("__QUIET__", false);// turn to true to stop terminal output
-define("__QUIET__", true);
+if (count($argv)>1 and $argv[1]=='-v') {
+   define("__QUIET__", false);// turn to true to stop terminal output
+} else {
+   define("__QUIET__", true);
+}
 define("__AGENT__","Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1");
 define("__TIMEOUT__",15);
 
@@ -12,7 +15,7 @@ define("__TIMEOUT__",15);
 new checksite();
 
 class checksite {
-	
+      private $termcol = 0;	
 	function __construct(){
 		if (!__QUIET__) $this->termcol = @exec('tput -T xterm-color cols');
 		$this->log("Beginning test of URLs");
