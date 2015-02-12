@@ -62,7 +62,7 @@ class checksite {
     private function report($url,$code) {
     	$this->log("Error accessing:".$url." emailing admin");
     	$subject = "Problem accessing".$url;
-    	$message = "The URL:".$url." returned an HTTP code of:".$code;
+    	$message = "The URL: ".$url." returned an HTTP code of:".$code;
     	$message = wordwrap($message, 70, "\r\n");
     	mail($this->emails, $subject, $message);
 
